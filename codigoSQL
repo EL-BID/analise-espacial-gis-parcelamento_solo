@@ -1,0 +1,30 @@
+Processamento de atualização 
+ 
+
+Da atualização dos dados alfanuméricos, foram realizadas as transações de processamento que inclui várias operações de escrita direta no banco de dados, conforme a estrutura e modelagem do banco de dados corporativo existente, tais como: 
+
+
+---- Atualização dos dados do Lote 
+
+update  InfoAnualLote set 
+quadraLoteamento=geo.quadra, 
+loteLoteamento=geo.lote, 
+areaTerreno=geo.area, 
+from InfoAnualLote as ial inner join  
+LoteDadoCadastro as lc on ia.codLote=lc.codLote inner join  
+Lotes_da_base_para_atualizar as geo on geo.inscricaoImobiliaria=lc.inscricaoImobiliaria 
+where geo.atualiza= 'SIM' and ial.imob.InfoAnualLote=2023 
+ 
+
+---- Inserindo registro do documento e histórico da atualização 
+
+insert into HistoricoLote 
+(codTipoHistorico, codTipoDocumento, codPessoaAtualizadora, codLote, anoDocumento, numDocumento, 
+observacao, dtReferencia, dtCadastro) 
+select 34,23,1, geo.codLote, 2022, '3472901',  
+'Atualização da área de terreno e referência de loteamento por meio de retificação via sistema (GEO), com base em Parcelamento de Solo da Regularização Fundiária devidamente registrado no RGI 1ª Zona sob matrícula 18.287 (livro 02), bem como Memorial Descritivo Final. ', '2023-01-01 00:00:00.0000000', getdate() 
+from Lotes_da_base_para_atualizar as geo 
+where geo.atualiza= 'SIM' 
+ 
+
+Da atualização das feições espaciais na base cartográfica, foram substituídos os polígonos dos lotes da base cartográfica pelos polígonos de lotes do parcelamento do solo com as devidas geocodificações das inscrições municipais, somente daquelas feições com o campo atualiza= 'SIM' 
